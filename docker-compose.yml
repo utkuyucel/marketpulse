@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: marketpulse-db
+    environment:
+      POSTGRES_DB: marketpulse
+      POSTGRES_USER: marketpulse_user
+      POSTGRES_PASSWORD: marketpulse_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketpulse_user -d marketpulse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - marketpulse-network
+
+  api:
+    build: .
+    container_name: marketpulse-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://marketpulse_user:marketpulse_pass@postgres:5432/marketpulse
+    env_file:
+      - .env
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - marketpulse-network
+
+volumes:
+  postgres_data:
+
+networks:
+  marketpulse-network:
+    driver: bridge
