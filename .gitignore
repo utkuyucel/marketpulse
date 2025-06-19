@@ -1,5 +1,4 @@
 # environment variables
-
 .environment
 .env
 
@@ -15,3 +14,30 @@ __pycache__/
 *.pyc
 *.pyo
 __mypy_cache__/
+
+# ML Models
+models/*.pkl
+models/*.joblib
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
